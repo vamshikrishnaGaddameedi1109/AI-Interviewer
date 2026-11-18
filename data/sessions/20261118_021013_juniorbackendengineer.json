@@ -1,0 +1,80 @@
+{
+  "timestamp": "2026-11-18T02:10:13.481300",
+  "role": "Junior Backend Engineer",
+  "resume": "",
+  "total_questions": 1,
+  "conversation_history": [
+    {
+      "role": "assistant",
+      "content": "Sample Question 1?"
+    },
+    {
+      "role": "user",
+      "content": "I used a hash map for O(1) average lookup."
+    }
+  ],
+  "evaluation_report": {
+    "overall_score": 82,
+    "hiring_recommendation": "Strong Hire",
+    "overall_summary": "Solid fundamentals.",
+    "strengths": [
+      "Clear Big-O",
+      "Good SQL knowledge",
+      "Structured STAR"
+    ],
+    "category_scores": {
+      "technical_depth": 82,
+      "problem_solving": 80,
+      "communication_clarity": 85,
+      "role_alignment": 81
+    },
+    "question_breakdown": [
+      {
+        "question": "Q1",
+        "answer_summary": "Used hash map",
+        "score": 8,
+        "feedback": "Great."
+      }
+    ],
+    "actionable_suggestions": [
+      {
+        "priority": "High",
+        "category": "Problem Solving & DSA",
+        "title": "Always State Time & Space Complexity (Big-O)",
+        "advice": "In campus and entry-level coding interviews, interviewers always look for candidates who mention Big-O without being prompted. Whenever you propose a solution, immediately state: 'This approach takes O(N) time and O(1) space because...'",
+        "action_item": "Review Big-O complexity for basic operations on Arrays, HashMaps, Binary Search Trees, and common sorting algorithms (QuickSort, MergeSort)."
+      },
+      {
+        "priority": "High",
+        "category": "Project Articulation",
+        "title": "Explain Your Projects with Architecture, Not Just Features",
+        "advice": "Instead of only stating what the project does ('It is a recipe app'), explain the technical architecture: frontend framework, backend API endpoints, database schema, and one difficult bug you debugged.",
+        "action_item": "Prepare a 60-second pitch for your main college project covering: Problem -> Tech Stack -> Your specific code contributions -> Hardest bug solved."
+      },
+      {
+        "priority": "Medium",
+        "category": "Core Fundamentals",
+        "title": "Connect OOP Theory to Practical Code Examples",
+        "advice": "When asked about Object-Oriented Programming (Polymorphism, Encapsulation, Inheritance), avoid reciting textbook definitions. Give a quick real-world code example (e.g., 'An Animal base class with a makeSound() method overridden by Dog').",
+        "action_item": "Write a 5-line code snippet demonstrating method overriding vs overloading in your preferred programming language."
+      }
+    ],
+    "model_answer_transformation": {
+      "question": "Can you explain the difference between an Array and a Linked List, and when you would use each?",
+      "candidate_flaw": "Gave a brief theoretical answer ('Array has fixed size, Linked List has nodes') without explaining memory layout, access time complexity, or practical use cases.",
+      "ideal_model_answer": "An array stores elements in contiguous memory locations, which gives us instant O(1) random access by index. However, resizing requires allocating a new memory block and copying, and inserting in the middle takes O(N) time. In contrast, a Linked List stores data in discrete nodes containing values and pointers. Inserting or deleting at the head is O(1) without shifting, but finding an element requires O(N) sequential traversal because memory is not contiguous. In practice, I'd use an Array when I need fast indexing or know the collection size upfront, and a Linked List when frequent insertions/deletions at the boundaries occur.",
+      "key_takeaway": "Always compare time complexity, memory allocation (contiguous vs pointers), and give a real-world scenario where one beats the other."
+    },
+    "study_topics": [
+      "Data Structures: Hash Maps vs Binary Trees (Lookup time & collisions)",
+      "SQL Basics: INNER vs LEFT JOIN, GROUP BY, and basic indexing",
+      "OOP Pillars: Polymorphism vs Inheritance with code examples",
+      "Web Fundamentals: REST API status codes (200, 201, 400, 404, 500)"
+    ],
+    "communication_coaching": {
+      "pacing_and_conciseness": "Speak clearly and take a 5-second pause to organize your thoughts before answering complex questions.",
+      "star_framework_usage": "When talking about college projects or team conflicts, use STAR (Situation, Task, Action, Result) to stay structured.",
+      "executive_presence": "Demonstrate curiosity and coachability. If you do not know a syntax rule, explain your logical thought process honestly."
+    }
+  }
+}
