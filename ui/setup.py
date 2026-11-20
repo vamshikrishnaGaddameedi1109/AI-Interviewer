@@ -3,6 +3,7 @@
 import streamlit as st
 from interview.flow import start_interview
 from interview.llm import get_api_key
+from interview.resume_parser import extract_text_from_pdf
 from ui.theme import render_header
 from ui.assets import get_hero_room_uri
 
@@ -114,6 +115,17 @@ def render_setup_screen() -> None:
             "to power dynamic questions and scoring."
         )
 
+    if "role_input_widget" not in st.session_state:
+        st.session_state.role_input_widget = (
+            st.session_state.get("role_input_val")
+            or st.session_state.get("role")
+            or "Entry-Level Software Engineer (Fresher)"
+        )
+    if "resume_input_widget" not in st.session_state:
+        st.session_state.resume_input_widget = st.session_state.get(
+            "resume_input_val", st.session_state.get("resume", "")
+        )
+
     # 3. Two-Column Workspace Layout
     col_main, col_sidebar = st.columns([1.8, 1.2], gap="large")
 
@@ -126,40 +138,96 @@ def render_setup_screen() -> None:
         with col_p1:
             if st.button("🚀 Fresher SDE", use_container_width=True):
                 st.session_state.role_input_val = ROLE_PRESETS[0]
+                st.session_state.role_input_widget = ROLE_PRESETS[0]
                 st.session_state.resume_input_val = SAMPLE_RESUMES[ROLE_PRESETS[0]]
+                st.session_state.resume_input_widget = SAMPLE_RESUMES[ROLE_PRESETS[0]]
+                st.session_state.uploaded_pdf_meta = None
+                st.session_state.pdf_parse_error = None
                 st.rerun()
         with col_p2:
             if st.button("💻 Junior Full-Stack", use_container_width=True):
                 st.session_state.role_input_val = ROLE_PRESETS[1]
+                st.session_state.role_input_widget = ROLE_PRESETS[1]
                 st.session_state.resume_input_val = SAMPLE_RESUMES[ROLE_PRESETS[1]]
+                st.session_state.resume_input_widget = SAMPLE_RESUMES[ROLE_PRESETS[1]]
+                st.session_state.uploaded_pdf_meta = None
+                st.session_state.pdf_parse_error = None
                 st.rerun()
         with col_p3:
             if st.button("⚙️ Junior Backend", use_container_width=True):
                 st.session_state.role_input_val = ROLE_PRESETS[2]
+                st.session_state.role_input_widget = ROLE_PRESETS[2]
                 st.session_state.resume_input_val = SAMPLE_RESUMES[ROLE_PRESETS[2]]
+                st.session_state.resume_input_widget = SAMPLE_RESUMES[ROLE_PRESETS[2]]
+                st.session_state.uploaded_pdf_meta = None
+                st.session_state.pdf_parse_error = None
                 st.rerun()
 
-        default_role = st.session_state.get("role_input_val", st.session_state.get("role", "Entry-Level Software Engineer (Fresher)"))
         role_input = st.text_input(
             "Target Position / Internship Title *",
-            value=default_role,
+            key="role_input_widget",
             placeholder="e.g. Graduate Software Engineer, Junior Web Developer, Associate Python Dev...",
             help="Questions will be strictly calibrated to entry-level fundamentals for this role.",
         )
 
         st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
         st.markdown("### 📄 Candidate Background, Degree & Projects")
-        
-        default_resume = st.session_state.get("resume_input_val", st.session_state.get("resume", ""))
+
+        uploaded_pdf = st.file_uploader(
+            "📎 Upload Resume PDF (Optional)",
+            type=["pdf"],
+            key="resume_pdf_uploader",
+            help="Upload your resume PDF so interview questions are tailored directly to your skills, projects, and experience.",
+        )
+
+        if uploaded_pdf is not None:
+            pdf_sig = (uploaded_pdf.name, uploaded_pdf.size)
+            if st.session_state.get("uploaded_pdf_sig") != pdf_sig:
+                try:
+                    extracted_text, page_count = extract_text_from_pdf(uploaded_pdf.getvalue())
+                    st.session_state.uploaded_pdf_sig = pdf_sig
+                    st.session_state.uploaded_pdf_extracted = extracted_text
+                    st.session_state.uploaded_pdf_meta = {
+                        "name": uploaded_pdf.name,
+                        "pages": page_count,
+                        "chars": len(extracted_text),
+                    }
+                    st.session_state.pdf_parse_error = None
+                    st.session_state.resume_input_val = extracted_text
+                    st.session_state.resume_input_widget = extracted_text
+                except ValueError as e:
+                    st.session_state.uploaded_pdf_sig = pdf_sig
+                    st.session_state.uploaded_pdf_meta = None
+                    st.session_state.pdf_parse_error = str(e)
+        elif st.session_state.get("uploaded_pdf_sig") is not None:
+            # User clicked remove (×) on the uploaded PDF
+            prev_extracted = st.session_state.get("uploaded_pdf_extracted", "")
+            st.session_state.uploaded_pdf_sig = None
+            st.session_state.uploaded_pdf_meta = None
+            st.session_state.uploaded_pdf_extracted = None
+            st.session_state.pdf_parse_error = None
+            if st.session_state.get("resume_input_widget") == prev_extracted:
+                st.session_state.resume_input_widget = ""
+                st.session_state.resume_input_val = ""
+
+        if st.session_state.get("pdf_parse_error"):
+            st.warning(f"⚠️ {st.session_state.pdf_parse_error}")
+        elif st.session_state.get("uploaded_pdf_meta"):
+            meta = st.session_state.uploaded_pdf_meta
+            st.caption(
+                f"📄 Extracted from **{meta['name']}** ({meta['pages']} page(s), {meta['chars']:,} chars) · "
+                "Review or edit the extracted resume text below."
+            )
+
         resume_input = st.text_area(
             "College Projects, Degree, Tech Stack, or Resume (Optional)",
-            value=default_resume,
+            key="resume_input_widget",
             height=130,
-            placeholder="Paste your degree/college, coursework, favorite tech stack (Python, Java, React, SQL), or capstone project details here...\n\nThe interviewer will ask you to explain your projects and code choices.",
-            help="Optional: Share your college projects or courses so the interviewer can ask relevant questions.",
+            placeholder="Upload a PDF resume above, or paste your degree/college, coursework, favorite tech stack (Python, Java, React, SQL), or capstone project details here...\n\nThe interviewer will ask you to explain your projects and code choices.",
+            help="Optional: Upload your PDF resume or share your projects/courses so the interviewer can ask tailored questions.",
         )
         if resume_input:
-            st.caption(f"✓ {len(resume_input):,} characters loaded · Interviewer will ask about your specific projects and courses.")
+            st.caption(f"✓ {len(resume_input):,} characters loaded · Interviewer will tailor questions to your resume and projects.")
 
         st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
         st.markdown("### ⏱️ Experience Level & Session Length")

@@ -12,7 +12,7 @@ if [ -d "$PYLIBS_DIR" ]; then
 fi
 
 # Ensure dependencies are importable; bootstrap pip if missing and install into __pypackages__
-if ! python3 -c "import streamlit, google.genai, dotenv, gtts, PIL.Image" 2>/dev/null; then
+if ! python3 -c "import streamlit, google.genai, dotenv, gtts, PIL.Image, pypdf" 2>/dev/null; then
   echo "Python dependencies not found. Bootstrapping and installing from requirements.txt..."
   if ! python3 -m pip --version >/dev/null 2>&1; then
     curl -fsSL https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py

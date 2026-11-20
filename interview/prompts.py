@@ -5,12 +5,13 @@ import re
 from typing import List, Optional
 
 MAX_QUESTIONS_PER_REQUEST: int = 5
-MAX_RESUME_CHARS: int = 1200
+MAX_RESUME_CHARS: int = 2000
 MAX_TRANSCRIPT_CHARS: int = 4500
 
 BATCH_QUESTIONS_SYSTEM_PROMPT = (
     "You are an encouraging technical interviewer for entry-to-mid level (fresher/junior, 0-3 yrs) candidates. "
     "Return ONLY valid JSON: {\"questions\": [\"...\", ...]}. "
+    "When a resume or background is provided, tailor questions directly to the candidate's listed skills, projects, and experience. "
     "Cover core programming/OOP, basic DSA & Big-O, candidate projects, REST/SQL basics, and 1 behavioral question. "
     "No senior/staff architecture questions. Keep each question concise (1-2 sentences)."
 )
